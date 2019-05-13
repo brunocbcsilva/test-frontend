@@ -53,13 +53,38 @@
 					<td>{{ user.name }}</td>
 					<td>{{ user.job }}</td>
 					<td>
-						<button type="button" class="btn btn-outline-primary mr-3" @click="updateUser(user.id)">Editar</button>
-						<button type="button" class="btn btn-outline-danger" @click="deleteUser(user.id)">Remover</button>
+						<button v-b-modal.modal-update type="button" class="btn btn-outline-primary mr-3"
+								@click="updateUser(user.id)">Editar
+						</button>
+						<button type="button" class="btn btn-outline-danger" @click="deleteUser(user.id)">Remover
+						</button>
 					</td>
 				</tr>
 				</tbody>
 			</table>
 		</div>
+		<b-modal id="modal-update" title="Update" hide-footer>
+			<b-form @submit="updateUserSave">
+				<input type="hidden" v-model="update.idx">
+				<b-form-group id="input-group-name-update" label="Job:" label-for="name-update">
+					<b-form-input
+						id="name-update"
+						v-model="update.name"
+						required
+						placeholder="Enter name"
+					></b-form-input>
+				</b-form-group>
+				<b-form-group id="input-group-job-update" label="Your Name:" label-for="job-update">
+					<b-form-input
+						id="job-update"
+						v-model="update.job"
+						required
+						placeholder="Enter name"
+					></b-form-input>
+				</b-form-group>
+			</b-form>
+			<b-button type="submit" variant="primary" class="mr-3">Submit</b-button>
+		</b-modal>
 	</div>
 </template>
 
@@ -72,7 +97,12 @@
 			return {
 				form: {
 					name: '',
-					job: '',
+					job: ''
+				},
+				update: {
+					idx: '',
+					name: '',
+					job: ''
 				},
 				show: true,
 				usersCreated: []
@@ -119,16 +149,29 @@
 				this.form.name = ''
 			},
 			updateUser(userId) {
+				debugger
 				var idx = this.usersCreated.find(function (value, index) {
-					if(value.id == userId) return index
+					if (value.id == userId) return index
 				});
+
+				this.update.idx = idx;
+				this.update.name = this.usersCreated[idx].name;
+				this.update.job = this.usersCreated[idx].job;
+
+				this.$bvModal.show('modal-update')
+			},
+			updateUserReset() {
+				this.update.idx = '',
+				this.update.name = '',
+				this.update.job = ''
 			},
 			updateUserSave() {
 
 			},
 			deleteUser(userId) {
+				debugger
 				var idx = this.usersCreated.find(function (value, index) {
-					if(value.id == userId) return index
+					if (value.id == userId) return index
 				});
 
 				axios.delete('https://reqres.in/api/users/' + userId)
