@@ -12,7 +12,6 @@ export default new Vuex.Store({
 			state.users = payload
 		},
 		pushUsers: (state, payload) => {
-			window.console.log(payload)
 			state.users.push(payload)
 		},
 	},

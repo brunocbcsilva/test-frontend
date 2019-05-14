@@ -133,6 +133,14 @@
 				</div>
 			</div>
 		</div>
+		<div class="w-100 mt-5"></div>
+		<div class="col-12 col-md-8 col-lg-4">
+			<div class="form-group">
+				<label>Buscar por: </label>
+				<input type="text" class="form-control" v-model="search">
+			</div>
+		</div>
+		<div class="w-100"></div>
 		<div class="col-12">
 			<!-- Lista de usuarios -->
 			<table class="table table-hover table-bordered">
@@ -141,15 +149,20 @@
 					<th>Primeiro Nome</th>
 					<th>Ultimo Nome</th>
 					<th>E-mail</th>
-					<th>Ações</th>
+					<th class="text-right">Ações</th>
 				</tr>
 				</thead>
 				<tbody>
-				<tr v-for="user in users" :key="user.id">
+				<tr v-if="users.length === 0">
+					<td colspan="4" class="text-center">
+						Nenhum registro encontrado.
+					</td>
+				</tr>
+				<tr v-else v-for="user in users" :key="user.id">
 					<td>{{user.first_name}}</td>
 					<td>{{user.last_name}}</td>
 					<td>{{user.email}}</td>
-					<td>
+					<td class="text-right">
 						<button class="btn btn-sm btn-outline-info mr-3" @click="updateUser(user.id)">Editar</button>
 						<button class="btn btn-sm btn-outline-danger" @click="deleteUser(user.id)">Remover</button>
 					</td>
@@ -179,12 +192,26 @@
 					lastName: '',
 					email: '',
 				},
+				search: '',
 				showFormNewUser: true
 			}
 		},
 		computed: {
 			users() {
-				return this.$store.state.users
+				var userList = this.$store.state.users;
+				var filterKey = this.search && this.search.toLowerCase()
+
+				if(filterKey.length > 2) {
+					var filter = userList.filter(user => {
+						return user.first_name.toLowerCase().indexOf(filterKey) > -1 ||
+							user.last_name.toLowerCase().indexOf(filterKey) > -1 ||
+							user.email.toLowerCase().indexOf(filterKey) > -1
+					})
+
+					return filter
+				} else {
+					return userList
+				}
 			}
 		},
 		mounted() {
@@ -203,7 +230,7 @@
 			},
 			deleteUser(id) {
 				axios.delete('https://reqres.in/api/users/' + id)
-					.then(response => {
+					.then(() => {
 						var idx = this.users.find((value, i) => {
 							if (value['id'] === id) return i
 						});
@@ -234,6 +261,7 @@
 
 						this.$store.commit('pushUsers', newUser)
 						this.$toast.success('Usuário cadastrado com sucesso!', 'Sucesso!');
+						this.resetFormAdd()
 					})
 					.catch(() => {
 						return this.$toast.error('Desculpe! Ocorreu um erro.', 'Ops!');
@@ -266,7 +294,7 @@
 					last_name: this.update.lastName,
 					email_name: this.update.email,
 				})
-					.then(response => {
+					.then(() => {
 						this.users[i].first_name = this.update.firstName;
 						this.users[i].last_name = this.update.lastName;
 						this.users[i].email = this.update.email;
@@ -275,6 +303,13 @@
 
 						this.$toast.success('Registro editado com sucesso!', 'sucesso!');
 					})
+			},
+			resetFormAdd(){
+				this.form = {
+					firstName: '',
+					lastName: '',
+					email: '',
+				}
 			},
 			resetUpdateUser() {
 				this.showFormNewUser = !this.showFormNewUser;
