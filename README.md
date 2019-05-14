@@ -1,4 +1,28 @@
-# Teste dev Frontend
+# Teste dev Frontend :::: Concluido!
+
+## Visualizando a aplicação
+##### Step 1
+```
+ Realize um git clone
+```
+##### Step 2
+```
+cd [pasta_do_projeto]
+yarn install
+```
+##### Step 3
+```
+yarn build
+```
+##### Step 4
+```
+node server.js
+Abra o navegador e digite: localhost:5000 
+```
+##### Para executar em ambiente de desenvolvimento
+```
+yarn serve
+```
 
 ## Requisitos:
 - Você deve fazer o fork desse projeto no seu repositório;
